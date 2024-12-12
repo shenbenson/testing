@@ -1,0 +1,42 @@
+name: API Diff
+on:
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+
+jobs:
+  generate-diff:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Get API specs and generate JSON files
+        run: |
+          # Get the state before the PR
+          git checkout ${{ github.event.pull_request.base.sha }}
+          yq -o=json api.yaml > previous.json
+          # Get the merged state
+          git checkout ${{ github.event.pull_request.merge_commit_sha }}
+          yq -o=json api.yaml > current.json
+
+      - name: Run API diff
+        run: node scripts/api-diff.js
+
+      - name: Upload release notes artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-notes
+          path: release-notes.md
+          retention-days: 1

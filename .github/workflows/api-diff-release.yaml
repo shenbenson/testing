@@ -1,19 +1,13 @@
-name: Release API Specs
+name: API Diff and Release
 on:
-  workflow_run:
-    workflows: ["API Diff"]
-    types:
-      - completed
+  push:
     branches:
       - main
-
-concurrency:
-  group: release-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+    paths:
+      - 'api.yaml'
 
 jobs:
-  release-api:
-    if: github.event.workflow_run.conclusion == 'success'
+  diff-and-release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -29,11 +23,18 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      - name: Download release notes
-        uses: actions/download-artifact@v4
-        with:
-          name: release-notes
-          path: .
+      - name: Get API specs and generate JSON files
+        run: |
+          # Get the state before the merge (previous commit)
+          git checkout HEAD^1
+          yq -o=json api.yaml > previous.json
+          
+          # Get the current state
+          git checkout HEAD
+          yq -o=json api.yaml > current.json
+
+      - name: Run API diff
+        run: node scripts/api-diff.js
 
       - name: Install semantic-release                                                                                                      
         run: npm install semantic-release@22.0.7 @semantic-release/github@9.2.6
@@ -41,7 +42,4 @@ jobs:
       - name: Semantic Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git checkout main
-          git pull
-          npx semantic-release
+        run: npx semantic-release

@@ -8,6 +8,9 @@ servers:
   - url: https://api.example.com/v1
 
 paths:
+  /random-path:
+    get:
+      summary: some random path!!
   /users:
     get:
       summary: Get a list of users
@@ -20,6 +23,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/User'
+  /user:
     post:
       summary: Create a new user
       requestBody:
@@ -111,7 +115,7 @@ components:
         - name
         - email
       properties:
-        name:
+        names:
           type: string
         email:
           type: string

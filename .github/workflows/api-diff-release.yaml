@@ -4,6 +4,8 @@ on:
     types: [closed]
     branches:
       - main
+    paths:
+      - 'api.yaml'
 
 jobs:
   diff-and-release:

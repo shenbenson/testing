@@ -27,8 +27,15 @@ jobs:
           git checkout HEAD
           yq -o=json api.yaml > current.json
 
-      - name: Run API diff
-        run: node scripts/api-diff.js
+      - name: Run API diff                                                                                                                  
+        run: node scripts/api-diff.js                                                                                                       
+                                                                                                                                             
+      - name: Upload release notes artifact                                                                                                 
+        uses: actions/upload-artifact@v4                                                                                                    
+        with:                                                                                                                               
+          name: release-notes                                                                                                               
+          path: release-notes.md                                                                                                            
+          retention-days: 1
 
       - name: Install semantic-release                                                                                                      
         run: npm install semantic-release@22.0.7 @semantic-release/github@9.2.6

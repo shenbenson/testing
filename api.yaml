@@ -112,7 +112,7 @@ components:
         - name
         - email
       properties:
-        namee:
+        name:
           type: string
         email:
           type: string

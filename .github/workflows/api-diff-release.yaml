@@ -1,11 +1,13 @@
 name: API Diff and Release
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches:
       - main
 
 jobs:
   diff-and-release:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -22,17 +24,18 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Get API specs and generate JSON files
+        if: github.event.pull_request.merged == true
         run: |
-          # Get the common ancestor with main (state before PR commits)
-          MERGE_BASE=$(git merge-base HEAD origin/main)
-          echo "Using merge-base commit: $MERGE_BASE"
+          # Get the base (pre-PR) API spec
+          git show ${{ github.event.pull_request.base.sha }}:api.yaml > previous.yaml
+          yq -o=json previous.yaml > previous.json
           
-          git checkout $MERGE_BASE
-          yq -o=json api.yaml > previous.json
+          # Get the merged (post-PR) API spec
+          git show ${{ github.event.pull_request.merge_commit_sha }}:api.yaml > current.yaml
+          yq -o=json current.yaml > current.json
           
-          # Get the current state
-          git checkout HEAD
-          yq -o=json api.yaml > current.json
+          # Clean up
+          rm previous.yaml current.yaml
 
       - name: Run API diff
         run: node scripts/api-diff.js

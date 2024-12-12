@@ -42,4 +42,7 @@ jobs:
       - name: Semantic Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
+        run: |
+          git fetch origin main
+          git checkout origin/main
+          npx semantic-release

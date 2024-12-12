@@ -1,11 +1,14 @@
 name: API Diff and Release
 on:
-  pull_request:
-    types: [closed]
+  push:
     branches:
       - main
-    paths:
-      - 'api.yaml'
+  # pull_request:
+  #   types: [closed]
+  #   branches:
+  #     - main
+  #   paths:
+  #     - 'api.yaml'
 
 jobs:
   diff-and-release:

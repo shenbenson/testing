@@ -1,0 +1,40 @@
+name: Release API Specs
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release-api:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+
+      - name: Get API specs and generate JSON files
+        run: |
+          git checkout main
+          yq -o=json api.yaml > previous.json
+          git checkout HEAD
+          yq -o=json api.yaml > current.json
+
+      - name: Run API diff
+        run: node scripts/api-diff.js
+
+      - name: Install semantic-release
+        run: npm install semantic-release@22.0.7 @semantic-release/github
+
+      - name: Semantic Release
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npx semantic-release

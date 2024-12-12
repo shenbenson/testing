@@ -2,6 +2,8 @@ name: API Diff
 on:
   pull_request:
     types: [closed]
+    paths:
+      - 'api.yaml'
     branches:
       - main
 

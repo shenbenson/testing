@@ -8,7 +8,7 @@ servers:
   - url: https://api.example.com/v1
 
 paths:
-  /get-users:
+  /users:
     get:
       summary: Get a list of users
       responses:
@@ -20,7 +20,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/User'
-  /users:
     post:
       summary: Create a new user
       requestBody:

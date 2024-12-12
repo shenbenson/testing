@@ -1,6 +1,8 @@
 name: Release API Specs
 on:
-  pull_request:
+  push:
+    branches:
+      - main
 
 jobs:
   release-api:
@@ -29,7 +31,7 @@ jobs:
         run: node scripts/api-diff.js
 
       - name: Install semantic-release
-        run: npm install semantic-release@22.0.7 @semantic-release/git @semantic-release/changelog @semantic-release/release-notes-generator
+        run: npm install semantic-release@22.0.7 @semantic-release/github
 
       - name: Semantic Release
         env:

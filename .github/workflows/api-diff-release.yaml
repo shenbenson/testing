@@ -1,6 +1,7 @@
 name: Release API Specs
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches:
       - main
 
@@ -21,12 +22,13 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Get API specs and generate JSON files
+        if: github.event.pull_request.merged == true
         run: |
-          # Get the parent commit (pre-merge state of main)
-          PARENT_COMMIT=$(git rev-parse HEAD^1)
-          git checkout $PARENT_COMMIT
+          # Get the state before the PR
+          git checkout ${{ github.event.pull_request.base.sha }}
           yq -o=json api.yaml > previous.json
-          git checkout HEAD
+          # Get the merged state
+          git checkout ${{ github.event.pull_request.merge_commit_sha }}
           yq -o=json api.yaml > current.json
 
       - name: Run API diff                                                                                                                  
@@ -43,7 +45,10 @@ jobs:
         run: npm install semantic-release@22.0.7 @semantic-release/github@9.2.6
 
       - name: Semantic Release
+        if: github.event.pull_request.merged == true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          git checkout main
+          git pull
           npx semantic-release

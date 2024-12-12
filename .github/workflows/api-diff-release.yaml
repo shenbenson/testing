@@ -23,9 +23,12 @@ jobs:
 
       - name: Get API specs and generate JSON files
         run: |
-          # Get the previous commit's API spec
-          git fetch origin main
-          git show origin/main:api.yaml > previous.yaml
+          # Find the last commit on main before the PR
+          LAST_MAIN_COMMIT=$(git rev-list --first-parent HEAD^1 -n 1)
+          echo "Last main commit: $LAST_MAIN_COMMIT"
+          
+          # Get the previous state's API spec
+          git show $LAST_MAIN_COMMIT:api.yaml > previous.yaml
           yq -o=json previous.yaml > previous.json
           
           # Get current API spec

@@ -36,7 +36,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/User'
 
-  /user/{userId}:
+  /users/{userId}:
     get:
       summary: Get a user by ID
       parameters:

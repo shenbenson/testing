@@ -1,10 +1,11 @@
-{                                                                                                                                           
-   "branches": ["main"],                                                                                                                     
-   "plugins": [                                                                                                                              
-     "@semantic-release/commit-analyzer",                                                                                                    
-     "@semantic-release/release-notes-generator",                                                                                            
-     ["@semantic-release/github", {                                                                                                          
-       "releaseNotesFile": "release-notes.md"                                                                                                
-     }]                                                                                                                                      
-   ]                                                                                                                                         
- }
+{
+  "branches": ["main"],
+  "plugins": [
+    "@semantic-release/commit-analyzer",
+    "@semantic-release/release-notes-generator",
+    ["@semantic-release/github", {
+      "assets": ["release-notes.md"],
+      "releaseNotesFile": "release-notes.md"
+    }]
+  ]
+}

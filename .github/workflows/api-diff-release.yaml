@@ -22,7 +22,9 @@ jobs:
 
       - name: Get API specs and generate JSON files
         run: |
-          git checkout main
+          # Get the parent commit (pre-merge state of main)
+          PARENT_COMMIT=$(git rev-parse HEAD^1)
+          git checkout $PARENT_COMMIT
           yq -o=json api.yaml > previous.json
           git checkout HEAD
           yq -o=json api.yaml > current.json

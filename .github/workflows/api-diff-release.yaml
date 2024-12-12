@@ -28,18 +28,20 @@ jobs:
           node-version-file: .nvmrc
 
       - name: Get API specs and generate JSON files
-        if: github.event.pull_request.merged == true
         run: |
-          # Get the base (pre-PR) API spec
-          git show ${{ github.event.pull_request.base.sha }}:api.yaml > previous.yaml
+          # Get the previous merge commit SHA
+          PREVIOUS_MERGE=$(git rev-list --merges main | head -n 2 | tail -n 1)
+          echo "Previous merge commit: $PREVIOUS_MERGE"
+          
+          # Get the previous state's API spec
+          git show $PREVIOUS_MERGE:api.yaml > previous.yaml || echo "v0.0.0" > previous.yaml
           yq -o=json previous.yaml > previous.json
           
-          # Get the merged (post-PR) API spec
-          git show ${{ github.event.pull_request.merge_commit_sha }}:api.yaml > current.yaml
-          yq -o=json current.yaml > current.json
+          # Get current API spec
+          yq -o=json api.yaml > current.json
           
           # Clean up
-          rm previous.yaml current.yaml
+          rm previous.yaml
 
       - name: Run API diff
         run: node scripts/api-diff.js

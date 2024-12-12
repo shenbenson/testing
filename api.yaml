@@ -8,7 +8,7 @@ servers:
   - url: https://api.example.com/v1
 
 paths:
-  /users:
+  /user:
     get:
       summary: Get a list of users
       responses:

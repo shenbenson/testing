@@ -111,7 +111,7 @@ components:
         - name
         - email
       properties:
-        name:
+        names:
           type: string
         email:
           type: string

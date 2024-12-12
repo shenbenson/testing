@@ -30,8 +30,8 @@ jobs:
       - name: Run API diff
         run: node scripts/api-diff.js
 
-      - name: Install semantic-release
-        run: npm install semantic-release@22.0.7 @semantic-release/github
+      - name: Install semantic-release                                                                                                      
+        run: npm install semantic-release@22.0.7 @semantic-release/github@9.2.6
 
       - name: Semantic Release
         env:

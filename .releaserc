@@ -31,6 +31,6 @@
     }]
   ],
   "templates": {
-    "api-changes": "{{#with (load-file-sync 'release-notes.md')}}{{this}}{{/with}}"
+    "api-changes": "{{#with (read 'release-notes.md')}}{{this}}{{/with}}"
   }
 }

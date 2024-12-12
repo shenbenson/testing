@@ -3,8 +3,6 @@ on:
   push:
     branches:
       - main
-    paths:
-      - 'api.yaml'
 
 jobs:
   diff-and-release:
@@ -25,8 +23,11 @@ jobs:
 
       - name: Get API specs and generate JSON files
         run: |
-          # Get the state before the merge (previous commit)
-          git checkout HEAD^1
+          # Get the common ancestor with main (state before PR commits)
+          MERGE_BASE=$(git merge-base HEAD origin/main)
+          echo "Using merge-base commit: $MERGE_BASE"
+          
+          git checkout $MERGE_BASE
           yq -o=json api.yaml > previous.json
           
           # Get the current state
@@ -42,4 +43,7 @@ jobs:
       - name: Semantic Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: npx semantic-release
+        run: |
+          git fetch origin main
+          git checkout origin/main
+          npx semantic-release

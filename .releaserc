@@ -2,10 +2,35 @@
   "branches": ["main"],
   "plugins": [
     "@semantic-release/commit-analyzer",
-    "@semantic-release/release-notes-generator",
     ["@semantic-release/github", {
       "assets": ["release-notes.md"],
-      "releaseNotesFile": "release-notes.md"
+      "successComment": false,
+      "failComment": false,
+      "failTitle": false,
+      "releasedLabels": false,
+      "addReleases": "bottom"
+    }],
+    ["@semantic-release/release-notes-generator", {
+      "preset": "conventionalcommits",
+      "writerOpts": {
+        "mainTemplate": "{{#if noteGroups}}## Commit Summary\n\n{{#each noteGroups}}\n### {{title}}\n\n{{#each notes}}\n* {{text}}\n{{/each}}\n\n{{/each}}{{/if}}\n\n{{> api-changes}}"
+      },
+      "presetConfig": {
+        "types": [
+          {"type": "feat", "section": "Features"},
+          {"type": "fix", "section": "Bug Fixes"},
+          {"type": "perf", "section": "Performance"},
+          {"type": "revert", "section": "Reverts"},
+          {"type": "docs", "section": "Documentation"},
+          {"type": "refactor", "section": "Code Refactoring"},
+          {"type": "test", "section": "Tests"},
+          {"type": "build", "section": "Build System"},
+          {"type": "ci", "section": "Continuous Integration"}
+        ]
+      }
     }]
-  ]
+  ],
+  "templates": {
+    "api-changes": "{{#with (load-file-sync 'release-notes.md')}}{{this}}{{/with}}"
+  }
 }

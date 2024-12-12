@@ -1,19 +1,15 @@
-name: Release API Specs
+name: API Diff and Release
 on:
-  workflow_run:
-    workflows: ["API Diff"]
-    types:
-      - completed
+  pull_request:
+    types: [closed]
+    paths:
+      - 'api.yaml'
     branches:
       - main
 
-concurrency:
-  group: release-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
-
 jobs:
-  release-api:
-    if: github.event.workflow_run.conclusion == 'success'
+  diff-and-release:
+    if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -29,11 +25,21 @@ jobs:
         with:
           node-version-file: .nvmrc
 
-      - name: Download release notes
-        uses: actions/download-artifact@v4
-        with:
-          name: release-notes
-          path: .
+      - name: Get API specs and generate JSON files
+        run: |
+          # Get the state before the PR (parent of merge commit)
+          BEFORE_PR=$(git rev-parse ${{ github.event.pull_request.merge_commit_sha }}^1)
+          echo "Using before-PR commit: $BEFORE_PR"
+          
+          git checkout $BEFORE_PR
+          yq -o=json api.yaml > previous.json
+          
+          # Get the current merged state
+          git checkout ${{ github.event.pull_request.merge_commit_sha }}
+          yq -o=json api.yaml > current.json
+
+      - name: Run API diff
+        run: node scripts/api-diff.js
 
       - name: Install semantic-release                                                                                                      
         run: npm install semantic-release@22.0.7 @semantic-release/github@9.2.6

@@ -1,0 +1,2 @@
+## Added
+- [GET] `/users/{id}`

@@ -34,13 +34,6 @@ jobs:
       - name: Run API diff
         run: node scripts/api-diff.js
 
-      # - name: Install conventional-changelog-cli
-      #   run: npm install -g conventional-changelog-cli
-
-      # - name: Generate commit changelog
-      #   run: |
-      #     conventional-changelog -p angular -i CHANGELOG.md -s -r 1 > commit-notes.md
-
       - name: Determine version
         id: version
         run: |
@@ -68,7 +61,7 @@ jobs:
       - name: Add version to release description
         run: |
           {
-            echo "# BitGo API Release ${{ steps.version.outputs.new_version }}"
+            echo "# API Release ${{ steps.version.outputs.new_version }}"
             cat release-description.md
           } > final-release-description.md
 

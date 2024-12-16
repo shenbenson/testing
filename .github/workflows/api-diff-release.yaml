@@ -1,17 +1,12 @@
-name: API Diff and Release
+name: Generate Release
+
 on:
   push:
     branches:
       - main
-  # pull_request:
-  #   types: [closed]
-  #   branches:
-  #     - main
-  #   paths:
-  #     - 'api.yaml'
 
 jobs:
-  diff-and-release:
+  generate-release:
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -29,18 +24,11 @@ jobs:
 
       - name: Get API specs and generate JSON files
         run: |
-          # Get the previous merge commit SHA
           PREVIOUS_MERGE=$(git rev-list --merges main | head -n 2 | tail -n 1)
-          echo "Previous merge commit: $PREVIOUS_MERGE"
-          
-          # Get the previous state's API spec
           git show $PREVIOUS_MERGE:api.yaml > previous.yaml || echo "v0.0.0" > previous.yaml
           yq -o=json previous.yaml > previous.json
           
-          # Get current API spec
           yq -o=json api.yaml > current.json
-          
-          # Clean up
           rm previous.yaml
 
       - name: Run API diff

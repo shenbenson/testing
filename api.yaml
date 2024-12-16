@@ -11,7 +11,7 @@ paths:
   /random-path:
     get:
       summary: some random path!!
-  /users:
+  /user:
     get:
       summary: Get a list of users
       responses:
@@ -23,7 +23,6 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/User'
-  /user:
     post:
       summary: Create a new user
       requestBody:

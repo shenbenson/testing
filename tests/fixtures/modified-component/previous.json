@@ -2,29 +2,35 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Test API",
+    "description": "A sample API to for testing",
     "version": "1.0.0"
   },
+  "servers": [
+    {
+      "url": "https://api.example.com/v1"
+    }
+  ],
   "paths": {
-    "/orders": {
+    "/user": {
       "post": {
-        "summary": "Create order",
-        "operationId": "createOrder",
+        "summary": "Create a new user profile",
         "requestBody": {
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/OrderInput"
+                "$ref": "#/components/schemas/NewUser"
               }
             }
           }
         },
         "responses": {
           "201": {
-            "description": "Order created",
+            "description": "User created successfully",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Order"
+                  "$ref": "#/components/schemas/User"
                 }
               }
             }
@@ -35,28 +41,32 @@
   },
   "components": {
     "schemas": {
-      "OrderInput": {
-        "type": "object",
-        "properties": {
-          "items": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
-          }
-        }
-      },
-      "Order": {
+      "User": {
         "type": "object",
         "properties": {
           "id": {
             "type": "string"
           },
-          "items": {
-            "type": "array",
-            "items": {
-              "type": "string"
-            }
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          }
+        }
+      },
+      "NewUser": {
+        "type": "object",
+        "required": [
+          "name",
+          "email"
+        ],
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
           }
         }
       }

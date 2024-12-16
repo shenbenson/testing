@@ -4,7 +4,7 @@ const { execSync } = require('child_process');
 
 const FIXTURES_DIR = path.join(__dirname, 'fixtures');
 
-describe('API Diff Tool', () => {
+describe('Generate Release Description', () => {
   const scenarios = fs.readdirSync(FIXTURES_DIR);
 
   beforeEach(() => {

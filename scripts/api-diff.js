@@ -171,7 +171,7 @@ function findComponentUsage(details, componentName) {
 
 // Generate markdown release notes
 function generateReleaseNotes() {
-    let releaseNotes = '# API Changes\n\n';
+    let releaseDescription = '';
     
     // Find renamed endpoints (those that appear in both added and removed)
     const renamed = {};
@@ -286,16 +286,16 @@ function generateReleaseNotes() {
         return titleA.localeCompare(titleB);
     });
 
-    releaseNotes += sections.join('\n');
+    releaseDescription += sections.join('\n');
 
-    return releaseNotes;
+    return releaseDescription;
 }
 
 // Main execution
 compareComponents();
 findAffectedPaths();
 comparePaths();
-const releaseNotes = generateReleaseNotes();
+const releaseDescription = generateReleaseNotes();
 
 // Write release notes to markdown file
-fs.writeFileSync('release-notes.md', releaseNotes);
+fs.writeFileSync('release-description.md', releaseDescription);

@@ -1,6 +1,5 @@
 const fs = require('fs');
 
-
 // Read the JSON files
 const previousSpec = JSON.parse(fs.readFileSync('previous.json', 'utf8'));
 const currentSpec = JSON.parse(fs.readFileSync('current.json', 'utf8'));

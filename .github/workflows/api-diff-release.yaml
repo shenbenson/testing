@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'api.yaml'
 
 jobs:
   generate-release:

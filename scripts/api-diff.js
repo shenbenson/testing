@@ -177,34 +177,42 @@ function generateReleaseNotes() {
         Array.from(allModifiedPaths)
             .sort()
             .forEach(path => {
-                // Direct modifications
+                // Handle both direct modifications and component changes for each path
+                const methodsToProcess = new Set();
+                
+                // Collect all affected methods
                 if (changes.modified[path]) {
-                    // Sort method changes alphabetically
-                    Array.from(changes.modified[path])
-                        .sort((a, b) => a.method.localeCompare(b.method))
-                        .forEach(({method, changes}) => {
-                            section += `- [${method}] \`${path}\`\n`;
-                            changes.sort().forEach(change => {
-                                section += `  - ${change}\n`;
-                            });
-                        });
+                    changes.modified[path].forEach(({method}) => methodsToProcess.add(method));
+                }
+                if (changes.affectedByComponents[path]) {
+                    changes.affectedByComponents[path].methods.forEach(method => methodsToProcess.add(method));
                 }
 
-                // Component-affected paths
-                if (changes.affectedByComponents[path] && !changes.modified[path]) {
-                    Array.from(changes.affectedByComponents[path].methods)
-                        .sort()
-                        .forEach(method => {
-                            section += `- [${method}] \`${path}\`\n`;
+                // Process each method
+                Array.from(methodsToProcess)
+                    .sort()
+                    .forEach(method => {
+                        section += `- [${method}] \`${path}\`\n`;
+                        
+                        // Add direct changes
+                        const directChanges = changes.modified[path]?.find(m => m.method === method);
+                        if (directChanges) {
+                            directChanges.changes.sort().forEach(change => {
+                                section += `  - ${change}\n`;
+                            });
+                        }
+
+                        // Add component changes
+                        if (changes.affectedByComponents[path]?.methods.has(method)) {
+                            const methodDetails = currentSpec.paths[path][method.toLowerCase()];
                             Array.from(changes.affectedByComponents[path].components)
                                 .sort()
                                 .forEach(component => {
-                                    const methodDetails = currentSpec.paths[path][method.toLowerCase()];
                                     const usageLocations = findComponentUsage(methodDetails, component).sort();
                                     section += `  - \`${component}\` modified in ${usageLocations.join(', ')}\n`;
                                 });
-                        });
-                }
+                        }
+                    });
             });
         sections.push(section);
     }

@@ -21,7 +21,7 @@ paths:
                 items:
                   $ref: '#/components/schemas/User'
     post:
-      summary: Create a new user profile
+      summary: Create a new user
       requestBody:
         required: true
         content:
@@ -111,7 +111,7 @@ components:
         - name
         - email
       properties:
-        name:
+        username:
           type: string
         email:
           type: string

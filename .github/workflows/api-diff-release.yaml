@@ -39,22 +39,23 @@ jobs:
       - name: Determine version
         id: version
         run: |
-          # Get current year and month
+          # Get current year, month, and day
           YEAR=$(date +%Y)
           MONTH=$(date +%m)
+          DAY=$(date +%d)
           
-          # Get the latest tag for current year.month
-          CURRENT_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "v$YEAR.$MONTH.0")
+          # Get the latest tag for current year.month.day
+          CURRENT_VERSION=$(git describe --tags --abbrev=0 2>/dev/null || echo "v$YEAR.$MONTH.$DAY.0")
           echo "Current version: $CURRENT_VERSION"
           
           # Extract version number
-          if [[ $CURRENT_VERSION == v$YEAR.$MONTH.* ]]; then
-            # If we already have a tag for this month, increment its number
-            VERSION_NUM=$(echo $CURRENT_VERSION | cut -d. -f3)
-            NEW_VERSION="v$YEAR.$MONTH.$((VERSION_NUM+1))"
+          if [[ $CURRENT_VERSION == v$YEAR.$MONTH.$DAY.* ]]; then
+            # If we already have a tag for today, increment its number
+            VERSION_NUM=$(echo $CURRENT_VERSION | cut -d. -f4)
+            NEW_VERSION="v$YEAR.$MONTH.$DAY.$((VERSION_NUM+1))"
           else
-            # If this is the first tag for this month, start at .1
-            NEW_VERSION="v$YEAR.$MONTH.1"
+            # If this is the first tag for today, start at .1
+            NEW_VERSION="v$YEAR.$MONTH.$DAY.1"
           fi
           
           echo "New version: $NEW_VERSION"

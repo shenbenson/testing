@@ -81,8 +81,8 @@ function comparePaths() {
                 if (!changes.added[path]) changes.added[path] = new Set();
                 changes.added[path].add(method.toUpperCase());
             } else if (JSON.stringify(previousMethods[method]) !== JSON.stringify(details)) {
-                if (!changes.modified[path]) changes.modified[path] = new Set();
-                changes.modified[path].add({
+                if (!changes.modified[path]) changes.modified[path] = [];
+                changes.modified[path].push({
                     method: method.toUpperCase(),
                     changes: getChanges(previousMethods[method], details)
                 });

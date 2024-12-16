@@ -1,27 +1,5 @@
 const fs = require('fs');
 
-// Helper function to calculate path similarity
-function calculatePathSimilarity(path1, path2) {
-    const segments1 = path1.split('/').filter(Boolean);
-    const segments2 = path2.split('/').filter(Boolean);
-    
-    // If the paths have very different structures, they're probably not related
-    if (Math.abs(segments1.length - segments2.length) > 1) {
-        return 0;
-    }
-    
-    let matches = 0;
-    const maxLength = Math.max(segments1.length, segments2.length);
-    
-    // Compare segments
-    for (let i = 0; i < Math.min(segments1.length, segments2.length); i++) {
-        if (segments1[i] === segments2[i]) {
-            matches++;
-        }
-    }
-    
-    return matches / maxLength;
-}
 
 // Read the JSON files
 const previousSpec = JSON.parse(fs.readFileSync('previous.json', 'utf8'));
@@ -173,31 +151,6 @@ function findComponentUsage(details, componentName) {
 function generateReleaseNotes() {
     let releaseDescription = '';
     
-    // Find renamed endpoints (those that appear in both added and removed)
-    const renamed = {};
-    // console.log('Before rename detection - Added paths:', Object.keys(changes.added));
-    const addedEntries = Object.entries(changes.added);
-    Object.entries(changes.removed).forEach(([removedPath, removedMethods]) => {
-        addedEntries.forEach(([addedPath, addedMethods]) => {
-            // Calculate path similarity
-            const pathSimilarity = calculatePathSimilarity(removedPath, addedPath);
-            // console.log(`Checking similarity between ${removedPath} and ${addedPath}: ${pathSimilarity}`);
-            
-            // If methods match and paths are similar enough, likely a rename
-            if (addedMethods && removedMethods && 
-                JSON.stringify([...removedMethods].sort()) === JSON.stringify([...addedMethods].sort()) &&
-                pathSimilarity >= 0.7) { // 70% similarity threshold
-                // console.log(`Detected rename: ${removedPath} → ${addedPath}`);
-                renamed[removedPath] = {
-                    newPath: addedPath,
-                    methods: [...addedMethods] // Store methods before deleting
-                };
-                // Remove from added and removed
-                delete changes.added[addedPath];
-                delete changes.removed[removedPath];
-            }
-        });
-    });
 
     const sections = [];
 
@@ -268,16 +221,6 @@ function generateReleaseNotes() {
         sections.push(section);
     }
 
-    // Renamed endpoints
-    if (Object.keys(renamed).length > 0) {
-        let section = '## Renamed\n';
-        Object.entries(renamed)
-            .sort(([a], [b]) => a.localeCompare(b))
-            .forEach(([oldPath, {newPath, methods}]) => {
-                section += `- [${methods.sort().join('] [')}] \`${oldPath}\` → \`${newPath}\`\n`;
-            });
-        sections.push(section);
-    }
 
     // Sort sections alphabetically and combine
     sections.sort((a, b) => {

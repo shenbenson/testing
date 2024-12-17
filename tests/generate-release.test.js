@@ -1,10 +1,12 @@
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
+const { describe, it, beforeEach, afterEach } = require('node:test');
+const assert = require('node:assert');
 
 const FIXTURES_DIR = path.join(__dirname, 'fixtures');
 
-describe('Generate Release Description', () => {
+describe('Generate Release Description', async () => {
   const scenarios = fs.readdirSync(FIXTURES_DIR);
 
   beforeEach(() => {
@@ -15,7 +17,7 @@ describe('Generate Release Description', () => {
   });
 
   scenarios.forEach(scenario => {
-    test(`handles ${scenario} correctly`, () => {
+    it(`handles ${scenario} correctly`, () => {
       // Copy fixture files to working directory
       const scenarioDir = path.join(FIXTURES_DIR, scenario);
       fs.copyFileSync(
@@ -37,7 +39,7 @@ describe('Generate Release Description', () => {
         'utf8'
       ).trim();
 
-      expect(actual).toBe(expected);
+      assert.strictEqual(actual, expected);
     });
   });
 
